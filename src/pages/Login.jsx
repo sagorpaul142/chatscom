@@ -27,7 +27,7 @@ const Login = () => {
         console.log(axios.defaults.baseURL)
         console.log(data)
         setIsLoading(true)
-        axios.post('/dj-rest-auth/login/', JSON.stringify(data), {withCredentials: true})
+        axios.post('/dj-rest-auth/login/', data, {withCredentials: true})
             .then(function (response) {
                 console.log(response.data);
                 // localStorage.setItem('device_id', response.data.access_token);
