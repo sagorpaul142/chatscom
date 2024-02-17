@@ -7,41 +7,56 @@ import {
     DropdownMenuSeparator,
     DropdownMenuItem
 } from "@/components/ui/dropdown-menu.jsx";
-import axios from "axios";
 import {Link, useNavigate} from "react-router-dom";
+import {setSession} from "@/lib/utils.js";
+import {useAuth} from "@/Contexts/AuthContext.jsx";
+import AxiosServices from "@/Config/AxiosServices.js";
 
 const UserAccountNav = () => {
     const navigate = useNavigate()
+    const {setIsAuthenticated, user, setUser} = useAuth()
     const logout = async () => {
-        await axios.post("/dj-rest-auth/logout/", {}, {withCredentials: true})
-        navigate("/")
+        try {
+            AxiosServices.post("/dj-rest-auth/logout/", {})
+                .then(response => {
+                    console.log(response)
+                    setSession(null);
+                    setIsAuthenticated(false)
+                    setUser(null)
+                    navigate("/")
+                }).catch((error) => {
+                console.log(error)
+                navigate("/")
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
-                <UserAvatar name={name} image={""} className="h-8 w-8"/>
+                <UserAvatar name={user?.username} image={""} className="h-8 w-8"/>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                        dkfhgdfg
-                        {/*{name && <p className="font-medium">{name}</p>}*/}
-                        {/*{email && (*/}
-                        {/*    <p className="w-[200px] truncate text-sm text-muted-foreground">*/}
-                        {/*        {email}*/}
-                        {/*    </p>*/}
-                        {/*)}*/}
+                        {user?.username && <p className="font-medium">{"@ " + user?.username}</p>}
+                        {user?.email && (
+                            <p className="w-[200px] truncate text-sm text-muted-foreground">
+                                {user?.email}
+                            </p>
+                        )}
                     </div>
                 </div>
                 <DropdownMenuSeparator/>
 
                 <Link to="/feed/home">
-                <DropdownMenuItem
-                    className="cursor-pointer"
-                >
-                    <Home className="mr-2 h-4 w-4"/>
-                    <span>Home</span>
-                </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                    >
+                        <Home className="mr-2 h-4 w-4"/>
+                        <span>Home</span>
+                    </DropdownMenuItem>
                 </Link>
 
                 <Link to="/profile">

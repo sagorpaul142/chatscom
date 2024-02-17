@@ -15,10 +15,14 @@ let refresh = false
 axios.interceptors.response.use(response => response, async error => {
     if (error.response.status === 401 && !refresh) {
         refresh = true
-        const response = await axios.post('/dj-rest-auth/token/refresh/', {}, {withCredentials: true});
-
+        let token = localStorage.getItem('refresh');
+        console.log(token)
+        const response = await axios.post('/dj-rest-auth/token/refresh/', {refresh: token}, {withCredentials: true});
+        console.log(response)
         if (response.status === 200) {
-            axios.defaults.headers.common['Authorization'] = `${response.data.access_token}`
+            console.log(response.data.access)
+            localStorage.setItem('access', response.data.access);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
             return axios(error.config)
         }
     }

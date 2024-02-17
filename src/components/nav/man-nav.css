@@ -1,0 +1,7 @@
+#mainNav a.active {
+    color: hsl(222.2 84% 4.9%);
+}
+
+#mainNav a {
+    color: hsl(222.2 84% 4.9%/ 0.6);
+}

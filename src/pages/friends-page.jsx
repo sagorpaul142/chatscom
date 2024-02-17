@@ -1,35 +1,34 @@
-import React, {useEffect, useState} from 'react';
-import Layout from "@/components/layout/Layout.jsx";
+import {useEffect, useState} from 'react';
 import axios from "axios";
+import FriendItem from "@/components/friend/friend-item.jsx";
+import AxiosServices from "@/Config/AxiosServices.js";
 
 const FriendsPage = () => {
     const [friends, setFriends] = useState([])
-    const getFriends = () => {
-        axios.get('/api/friends', {withCredentials: true})
-            .then(function (response) {
-                console.log(response.data);
-                setFriends(response.data.results)
-            })
-            .catch(function (error) {
-                console.log(error.response.data);
-            });
+    const getFriends = async () => {
+        try {
+            let response = await AxiosServices.get('/api/friends/')
+            console.log(response.data)
+            setFriends(response.data.results)
+        } catch (error) {
+            console.log(error)
+        }
     }
     useEffect(() => {
         getFriends()
     }, []);
-    console.log(friends)
+
     return (
-        <Layout>
-            <h1>Friends page</h1>
+        <>
             {
                 friends?.length > 0 ?
                     friends.map(friend => (
-                        <p key={friend.id}>{friend.friend_name}</p>
+                        <FriendItem key={friend.id} friend={friend}/>
                     ))
                     :
                     <p>No Data Found</p>
             }
-        </Layout>
+        </>
     );
 };
 

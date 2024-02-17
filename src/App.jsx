@@ -1,14 +1,13 @@
 import {RouterProvider} from "react-router-dom";
-import routes from "./routing/routes.jsx";
 import {Toaster} from "@/components/ui/sonner"
+import router from "@/routing/routes.jsx";
 
 function App() {
 
     return (
-        <>
-            <RouterProvider router={routes}/>
+        <RouterProvider router={router}>
             <Toaster/>
-        </>
+        </RouterProvider>
     )
 }
 

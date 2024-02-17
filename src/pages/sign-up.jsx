@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {ChevronRight, Loader2} from "lucide-react";
 import {Input} from "@/components/ui/input.jsx";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/form";
 import {buttonVariants} from "@/components/ui/button.jsx";
 import {cn} from "@/lib/utils.js";
-import axios from "axios";
+import {useAuth} from "@/Contexts/AuthContext.jsx";
+import AxiosServices from "@/Config/AxiosServices.js";
 
 const SignUp = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const {user} = useAuth()
     const navigate = useNavigate();
 
     const form = useForm({
@@ -33,20 +35,28 @@ const SignUp = () => {
     });
 
     async function onSubmit(data) {
-        setIsLoading(true)
-        axios.post('/dj-rest-auth/registration/', data)
-            .then(function (response) {
-                console.log(response.data);
-                setErrors({})
-                setIsLoading(false)
-                navigate("/")
-                form.reset()
-            })
-            .catch(function (error) {
-                setErrors(error.response.data)
-                setIsLoading(false)
-            });
+        try {
+            setIsLoading(true)
+            let response = await AxiosServices.post('/dj-rest-auth/registration/', data)
+            setErrors({})
+            setIsLoading(false)
+            navigate("/")
+            form.reset()
+
+            console.log(response)
+            setIsLoading(false)
+        } catch (err) {
+            setIsLoading(false)
+            console.log(err)
+            setErrors(err.response.data)
+        }
     }
+
+    useEffect(() => {
+        if (user) {
+            navigate("/feed/home")
+        }
+    }, [user]);
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center">

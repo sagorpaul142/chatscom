@@ -1,25 +1,31 @@
-import {useEffect} from 'react';
-import axios from "axios";
-import Layout from "@/components/layout/Layout.jsx";
+import {useEffect, useState} from 'react';
+import SinglePost from "@/components/home/single-post.jsx";
+import AxiosServices from "@/Config/AxiosServices.js";
 
 const HomePage = () => {
-    const getProfile = () => {
-        axios.get('/profiles/', {withCredentials: true})
-            .then(function (response) {
-                console.log(response.data);
-            })
-            .catch(function (error) {
-                console.log(error.response.data);
-            });
+    const [posts, setPosts] = useState([])
+    const getAllPosts = async () => {
+        try {
+            let response = await AxiosServices.get('/posts/')
+            console.log(response.data)
+            setPosts(response.data.results)
+        } catch (error) {
+            console.log(error)
+        }
     }
     useEffect(() => {
-        getProfile()
+        getAllPosts()
     }, []);
 
     return (
-        <Layout>
-            sdkfjhsdf
-        </Layout>
+        <>
+            {
+                posts.map(post => (
+                    <SinglePost key={post.id} post={post}/>
+
+                ))
+            }
+        </>
     );
 };
 

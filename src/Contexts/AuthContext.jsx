@@ -1,100 +1,75 @@
-import {createContext, useEffect, useState} from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
 import {Loader2} from "lucide-react";
+import AxiosServices from "@/Config/AxiosServices.js";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
+export default AuthContext;
 
 export const AuthProvider = ({children}) => {
-    // const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
+    let [authTokens, setAuthTokens] = useState(()=> localStorage.getItem('refresh') ? localStorage.getItem('refresh') : null)
+    let [isAuthenticated, setIsAuthenticated] = useState(false)
+    let [user, setUser] = useState(null)
+    let [loading, setLoading] = useState(true)
 
+    useEffect(() => {
+        const initialize = async () => {
+            if (localStorage.getItem('user')) {
+                setUser(JSON.parse(localStorage.getItem('user')))
+                // axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('access')}`;
+                setIsAuthenticated(true)
+                setLoading(false)
+            } else {
+                setUser(null)
+                setIsAuthenticated(false)
+                setLoading(false)
+            }
+        };
 
-    // useEffect(() => {
-    //     (async () => {
-    //         // if (window.localStorage.getItem('device_id')) {
-    //         //     setLoading(false);
-    //         //     return;
-    //         // } else {
-    //         //     setLoading(false)
-    //         // }
-    //
-    //     })();
-    // }, []);
-    //
-    // useMemo(() => {
-    //     axios.interceptors.request.use(
-    //         async (config) => {
-    //             if (shouldRefreshToken()) {
-    //                 try {
-    //                     await axios.post("/dj-rest-auth/token/refresh/");
-    //                 } catch (err) {
-    //                     setCurrentUser((prevCurrentUser) => {
-    //                         if (prevCurrentUser) {
-    //                             redirect("/");
-    //                         }
-    //                         return null;
-    //                     });
-    //                     removeTokenTimestamp();
-    //                     return config;
-    //                 }
-    //             }
-    //             return config;
-    //         },
-    //         (err) => {
-    //             return Promise.reject(err);
-    //         }
-    //     );
-    //
-    //     axios.interceptors.response.use(
-    //         (response) => response,
-    //         async (err) => {
-    //             if (err.response?.status === 401) {
-    //                 try {
-    //                     await axios.post("/dj-rest-auth/token/refresh/");
-    //                 } catch (err) {
-    //                     setCurrentUser((prevCurrentUser) => {
-    //                         if (prevCurrentUser) {
-    //                             redirect("/");
-    //                         }
-    //                         return null;
-    //                     });
-    //                     removeTokenTimestamp();
-    //                 }
-    //                 return axios(err.config);
-    //             }
-    //             return Promise.reject(err);
-    //         }
-    //     );
-    // }, [history]);
+        initialize();
+    }, [loading]);
 
-    // useEffect(() => {
-    //     axios.post('http://127.0.0.1:8000/dj-rest-auth/token/refresh', {
-    //         "refresh": "string"
-    //         // access: window.localStorage.getItem('device_id')
-    //     })
-    //         .then(function (response) {
-    //             console.log(response.data);
-    //             localStorage.setItem('device_id', response.data.access_token);
-    //             setIsAuthenticated(true);
-    //             setUser(response.data.user);
-    //         })
-    //         .catch(function (error) {
-    //             console.log(error.response.data);
-    //         });
-    // }, []);
+    let updateToken = async ()=> {
+        let token = localStorage.getItem('refresh')
+        let response = await AxiosServices.post('/dj-rest-auth/token/refresh/', {refresh: token})
+
+        if (response.status === 200){
+            // console.log(response)
+            setAuthTokens(response.data.access)
+            localStorage.setItem('access', response.data.access);
+        }
+        if(loading){
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=> {
+        if(loading){
+            updateToken()
+        }
+        let fourMinutes = 1000 * 60 * 2
+
+        let interval =  setInterval(()=> {
+            if(authTokens){
+                updateToken()
+            }
+        }, fourMinutes)
+        return ()=> clearInterval(interval)
+
+    }, [authTokens,loading])
 
     return (
-        <>
-            {loading ? (
-                <Loader2/>
-            ) : (
-                <AuthContext.Provider
-                    value={{currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated}}
-                >
-                    {children}
-                </AuthContext.Provider>
-            )}
-        </>
+        <AuthContext.Provider
+            value={{isAuthenticated, setIsAuthenticated, user, setUser, loading, setLoading}}
+        >
+            {loading ? <Loader2/> : children}
+        </AuthContext.Provider>
     );
 };
+
+export const useAuth = () => {
+    const authContext = useContext(AuthContext)
+    if (!authContext) {
+        throw new Error("useAuth used outside of the Provider")
+    }
+    return authContext;
+}

@@ -1,20 +1,21 @@
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {userAuthLoginSchema} from "@/lib/validations/auth.js";
-import {useContext, useState} from "react";
+import {useEffect, useState} from "react";
 import {ChevronRight, Loader2} from "lucide-react"
 import {Label} from "@/components/ui/label.jsx";
 import {Input} from "@/components/ui/input.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import {toast} from "sonner"
-import {AuthContext} from "@/Contexts/AuthContext.jsx";
-import axios from "axios";
+import {useAuth} from "@/Contexts/AuthContext.jsx";
+import {setSession} from "@/lib/utils.js";
+import AxiosServices from "@/Config/AxiosServices.js";
 
 const Login = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
     const navigate = useNavigate();
-    const {setIsAuthenticated, setCurrentUser} = useContext(AuthContext);
+    const {user, setUser, setIsAuthenticated} = useAuth();
     const {
         register,
         handleSubmit,
@@ -24,30 +25,39 @@ const Login = () => {
     })
 
     async function onSubmit(data) {
-        console.log(axios.defaults.baseURL)
-        console.log(data)
-        setIsLoading(true)
-        axios.post('/dj-rest-auth/login/', data, {withCredentials: true})
-            .then(function (response) {
-                console.log(response.data);
-                // localStorage.setItem('device_id', response.data.access_token);
-                axios.defaults.headers.common['Authorization'] = `${response.data.access_token}`
+        try {
+            setIsLoading(true)
+            let response = await AxiosServices.post('/dj-rest-auth/login/', data)
+            if (response.status === 200) {
                 setIsAuthenticated(true);
-                setCurrentUser(response.data.user);
+                setUser(response?.data?.user);
+                let token = {
+                    access: response.data.access_token,
+                    refresh: response.data.refresh_token,
+                    user: response.data.user
+                }
+                setSession(token)
                 setError("")
                 setIsLoading(false)
                 toast('Successfully logged in!')
                 navigate("/feed/home")
-                setIsLoading(false)
-            })
-            .catch(function (error) {
-                console.log(error.response);
-                // console.log(error.response.data?.non_field_errors);
-                // toast(error.response.data.non_field_errors[0])
-                // setError(error.response.data.non_field_errors[0])
-                setIsLoading(false)
-            });
+            }
+            console.log(response)
+            setIsLoading(false)
+        } catch (err) {
+            setIsLoading(false)
+            console.log(err)
+            if (err.response.status === 400) {
+                setError(err.response.data.non_field_errors[0])
+            }
+        }
     }
+
+    useEffect(() => {
+        if (user) {
+            navigate("/feed/home")
+        }
+    }, [user]);
 
     return (
         <div className="flex min-h-screen flex-1 flex-col justify-center relative">
