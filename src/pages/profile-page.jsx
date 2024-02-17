@@ -8,9 +8,7 @@ const ProfilePage = () => {
     const getProfile = async () => {
         try {
             let response = await AxiosServices.get(`/profiles/${user?.profile_id}`)
-            if (response.status === 200){
-                console.log(response.data)
-            }
+            console.log(response.data)
         } catch (e) {
             console.log(e)
         }

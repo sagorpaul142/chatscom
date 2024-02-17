@@ -8,7 +8,7 @@ const PhotosPage = () => {
     const getPhotos = async () => {
         try {
             let response = await AxiosServices.get('/photos/')
-            console.log(response.data)
+            // console.log(response.data)
             setPhotos(response.data.results)
         } catch (error) {
             console.log(error)
@@ -19,11 +19,13 @@ const PhotosPage = () => {
     }, []);
     return (
         <>
+            <div className="max-w-3xl mx-auto">
             {
                 photos.map(photo => (
                     <PhotoItem photo={photo} key={photo.id}/>
                 ))
             }
+            </div>
         </>
     );
 };

@@ -8,7 +8,7 @@ const VideosPage = () => {
     const getVideos = async () => {
         try {
             let response = await AxiosServices.get('/videos/')
-            console.log(response.data)
+            // console.log(response.data)
             setVideos(response.data.results)
         } catch (error) {
             console.log(error)
@@ -19,11 +19,13 @@ const VideosPage = () => {
     }, []);
     return (
         <>
-            {
-                videos.map(video => (
-                    <VideoItem video={video} key={video.id}/>
-                ))
-            }
+            <div className="max-w-3xl mx-auto">
+                {
+                    videos.map(video => (
+                        <VideoItem video={video} key={video.id}/>
+                    ))
+                }
+            </div>
         </>
     );
 };

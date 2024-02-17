@@ -7,7 +7,7 @@ const HomePage = () => {
     const getAllPosts = async () => {
         try {
             let response = await AxiosServices.get('/posts/')
-            console.log(response.data)
+            // console.log(response.data)
             setPosts(response.data.results)
         } catch (error) {
             console.log(error)
@@ -19,12 +19,14 @@ const HomePage = () => {
 
     return (
         <>
-            {
-                posts.map(post => (
-                    <SinglePost key={post.id} post={post}/>
+            <div className="max-w-3xl mx-auto">
+                {
+                    posts.map(post => (
+                        <SinglePost key={post.id} post={post}/>
 
-                ))
-            }
+                    ))
+                }
+            </div>
         </>
     );
 };

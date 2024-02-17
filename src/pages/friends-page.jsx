@@ -20,14 +20,18 @@ const FriendsPage = () => {
 
     return (
         <>
-            {
-                friends?.length > 0 ?
-                    friends.map(friend => (
-                        <FriendItem key={friend.id} friend={friend}/>
-                    ))
-                    :
-                    <p>No Data Found</p>
-            }
+            <div className="mt-5">
+                {
+                    friends?.length > 0 ?
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {friends.map(friend => (
+                                <FriendItem key={friend.id} friend={friend}/>
+                            ))}
+                        </div>
+                        :
+                        <p className="text-xl mt-10 font-semibold text-center">No data found</p>
+                }
+            </div>
         </>
     );
 };

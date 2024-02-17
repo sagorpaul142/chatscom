@@ -1,9 +1,38 @@
-import React from 'react';
-import {ThumbsUp} from "lucide-react";
+import {FilePen, MessageCircleMore, MoreVertical, ThumbsUp} from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu.jsx";
 
 const PhotoItem = ({photo}) => {
     return (
         <div className="bg-white p-4 border rounded-lg shadow-md first:mt-5 mb-4">
+            <div className="flex justify-end">
+                {
+                    photo.is_owner &&
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
+                            <MoreVertical className="h-4 w-4"/>
+                            <span className="sr-only">Open</span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                className="flex cursor-pointer items-center"
+                                onClick={() => {
+
+                                }}
+                            >
+                                <FilePen className="mr-2 h-4 w-4"/>
+                                Edit
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                }
+            </div>
+
             {/* Photo */}
             <img
                 src={photo.image}
@@ -24,34 +53,21 @@ const PhotoItem = ({photo}) => {
                 </div>
             </div>
 
-            {/* Like, Comment, Share */}
+            {/* Like, Comment */}
             <div className="flex items-center text-gray-500 mb-4">
                 <div className="flex items-center mr-4">
-                    <ThumbsUp className="mr-2" />
-                    <span className="text-sm">{photo.like_count} Likes</span>
+                    <ThumbsUp className="mr-1"/>
+                    <span className="text-sm">
+                        {photo.like_count}
+                        {photo.like_count > 1 ? " Likes" : " Like"}
+                    </span>
                 </div>
                 <div className="flex items-center mr-4">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className="w-6 h-6 mr-1"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M21 14a10.06 10.06 0 00-17.34 6.14"
-                        />
-                    </svg>
-                    <span className="text-sm">{photo.comment_count} Comments</span>
+                    <MessageCircleMore className="mr-2 cursor-pointer"/>
+                    <span className="text-sm">
+                        {photo.comment_count}
+                        {photo.comment_count > 1 ? " Comments" : " Comment"}
+                    </span>
                 </div>
             </div>
         </div>
