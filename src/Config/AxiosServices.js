@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'development') {
     // baseUrl = "http://localhost:8000/api";
     baseUrl = 'http://127.0.0.1:8000';
 } else if (process.env.NODE_ENV === 'production') {
-    baseUrl = 'https://chatcom-ec4ad238849d.herokuapp.com/';
+    baseUrl = 'https://chatcom-ec4ad238849d.herokuapp.com';
 } else {
     baseUrl = 'http://127.0.0.1:8000';
 }
