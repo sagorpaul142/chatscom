@@ -41,8 +41,8 @@ async function post(url, body, isMultipart) {
     });
 }
 
-async function put(url, body) {
-    const {serverUrl, requestHeader} = getIRequestProp();
+async function put(url, body,isMultipart) {
+    const {serverUrl, requestHeader} = getIRequestProp(isMultipart);
     return axios.put(serverUrl + url, body, {
         headers: requestHeader
     });

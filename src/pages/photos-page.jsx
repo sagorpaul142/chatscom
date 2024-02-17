@@ -1,31 +1,53 @@
 import {useEffect, useState} from "react";
-import PhotoItem from "@/components/photo-item.jsx";
+import PhotoItem from "@/components/photo/photo-item.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form.jsx";
-import {Textarea} from "@/components/ui/textarea.jsx";
 import {Loader2, XCircle} from "lucide-react";
 import {cn} from "@/lib/utils.js";
 import {buttonVariants} from "@/components/ui/button.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {postSchema} from "@/lib/validations/post.js";
 import {Helmet} from "react-helmet";
+import {toast} from "sonner";
+import {photoSchema} from "@/lib/validations/photo.js";
+import {Input} from "@/components/ui/input.jsx";
 
 const PhotosPage = () => {
     const [photos, setPhotos] = useState([])
     const [image, setImage] = useState(null)
     const [fileName, setFileName] = useState("")
     const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState([])
 
     const form = useForm({
-        resolver: zodResolver(postSchema),
+        resolver: zodResolver(photoSchema),
         defaultValues: {
-            content: "",
-            post_picture: "",
+            caption: "",
+            image: "",
         },
     });
 
     const onsubmit = async (data) => {
+        setIsLoading(true)
+        let values = {
+            caption: data.caption,
+            image: image
+        }
+        try {
+            let response = await AxiosServices.post('/photos/', values, true)
+            console.log(response.data)
+            setIsLoading(false)
+            setImage("")
+            setFileName("")
+            form.reset()
+            toast('Photo created successfully!')
+            setPhotos(photos => [response.data, ...photos])
+            setErrors([])
+        } catch (err) {
+            setIsLoading(false)
+            setErrors(err.response.data.image)
+            console.log(err)
+        }
     }
     const getPhotos = async () => {
         try {
@@ -43,10 +65,15 @@ const PhotosPage = () => {
         <>
             <Helmet>
                 <title>Photos Page</title>
-                <meta name="description" content="Helmet application" />
+                <meta name="description" content="Helmet application"/>
             </Helmet>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white p-4 border rounded-lg shadow-md mb-3 mt-5">
+                    {
+                        errors.map(error => (
+                            <p key={error} className="text-sm font-medium text-destructive">{error}</p>
+                        ))
+                    }
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onsubmit)}
@@ -55,14 +82,14 @@ const PhotosPage = () => {
                         >
                             <FormField
                                 control={form.control}
-                                name="content"
+                                name="caption"
                                 render={({field}) => (
                                     <FormItem>
-                                        <FormLabel className="sr-only">User Name</FormLabel>
+                                        <FormLabel className="sr-only">caption</FormLabel>
                                         <FormControl>
-                                            <Textarea
+                                            <Input
                                                 variant="ny"
-                                                placeholder="Post content..."
+                                                placeholder="caption..."
                                                 {...field}
                                             />
                                         </FormControl>
@@ -74,7 +101,7 @@ const PhotosPage = () => {
                                 !fileName &&
                                 <FormField
                                     control={form.control}
-                                    name="post_picture"
+                                    name="image"
                                     render={({field}) => (
                                         <FormItem>
                                             <FormLabel className="sr-only">Post Picture</FormLabel>
@@ -120,7 +147,7 @@ const PhotosPage = () => {
                                     {isLoading && (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                                     )}
-                                    Post
+                                    Submit
                                 </button>
                             </div>
                         </form>
@@ -128,7 +155,7 @@ const PhotosPage = () => {
                 </div>
                 {
                     photos.map(photo => (
-                        <PhotoItem photo={photo} key={photo.id}/>
+                        <PhotoItem photo={photo} key={photo.id} setPhotos={setPhotos}/>
                     ))
                 }
             </div>

@@ -28,7 +28,7 @@ const Login = () => {
     async function onSubmit(data) {
         try {
             setIsLoading(true)
-            let response = await AxiosServices.post('/dj-rest-auth/login/', data)
+            let response = await AxiosServices.post('/dj-rest-auth/login/', data, false)
             if (response.status === 200) {
                 setIsAuthenticated(true);
                 setUser(response?.data?.user);
@@ -64,7 +64,7 @@ const Login = () => {
         <div className="flex min-h-screen flex-1 flex-col justify-center relative">
             <Helmet>
                 <title>Login Page</title>
-                <meta name="description" content="Helmet application" />
+                <meta name="description" content="Helmet application"/>
             </Helmet>
             <div className="flex justify-end items-center my-5 absolute top-2 w-full">
                 <Link

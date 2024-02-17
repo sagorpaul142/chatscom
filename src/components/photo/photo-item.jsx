@@ -1,32 +1,32 @@
-import React, {useState} from 'react';
-import {FilePen, MoreVertical, ThumbsUp, MessageCircleMore, Trash2} from "lucide-react";
+import {FilePen, MessageCircleMore, MoreVertical, ThumbsUp, Trash2} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.jsx";
-import VideoEditModal from "@/components/video/video-edit-modal.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
 import {toast} from "sonner";
+import EditModal from "@/components/photo/edit-modal.jsx";
+import {useState} from "react";
 
-const VideoItem = ({video, setVideos}) => {
+const PhotoItem = ({photo, setPhotos}) => {
     const [modalOpen, setModalOpen] = useState(false);
-    const handleDeleteVideo = async (video) => {
+    const handleDeletePhoto = async (photo) => {
         try {
-            await AxiosServices.remove(`/videos/${video?.id}`)
-            setVideos(prev => prev.filter(prevVideo => prevVideo.id !== video?.id));
-            toast('Video deleted successfully!')
+            await AxiosServices.remove(`/photos/${photo?.id}`)
+            setPhotos(prev => prev.filter(prevPhoto => prevPhoto.id !== photo?.id));
+            toast('Photo deleted successfully!')
         } catch (e) {
             console.log(e)
         }
     }
     return (
         <>
-            <div className="bg-white p-4 border rounded-lg shadow-md first:mt-3 mb-5 last:mb-2">
+            <div className="bg-white p-4 border rounded-lg shadow-md first:mt-5 mb-4">
                 <div className="flex justify-end">
                     {
-                        video.is_owner &&
+                        photo.is_owner &&
                         <DropdownMenu>
                             <DropdownMenuTrigger
                                 className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
@@ -37,16 +37,15 @@ const VideoItem = ({video, setVideos}) => {
                                 <DropdownMenuItem
                                     className="flex cursor-pointer items-center"
                                     onClick={() => {
-                                        setModalOpen(true)
+                                        setModalOpen(!modalOpen)
                                     }}
                                 >
                                     <FilePen className="mr-2 h-4 w-4"/>
                                     Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator/>
+                                </DropdownMenuItem><DropdownMenuSeparator/>
                                 <DropdownMenuItem
                                     className="flex cursor-pointer items-center"
-                                    onClick={() => handleDeleteVideo(video)}
+                                    onClick={() => handleDeletePhoto(photo)}
                                 >
                                     <Trash2 className="mr-2 h-4 w-4"/>
                                     Delete
@@ -56,41 +55,51 @@ const VideoItem = ({video, setVideos}) => {
                     }
                 </div>
 
-
-                {/* Video Info */}
-                <div className="flex justify-between items-center mb-2">
-                    <p className="font-bold text-lg">{video.title}</p>
+                {/* Photo */}
+                <img
+                    src={photo.image}
+                    alt="User Photo"
+                    className="w-full h-64 object-cover rounded-md mb-4"
+                />
+                <p className="text-base mb-4">
+                    {photo?.caption}
+                </p>
+                {/* Photo Details */}
+                <div className="flex items-center mb-2">
+                    <img
+                        src="https://placekitten.com/40/40"
+                        alt="User Avatar"
+                        className="w-8 h-8 rounded-full mr-2"
+                    />
+                    <div>
+                        <p className="font-bold text-sm">{photo.owner}</p>
+                        <p className="text-xs text-gray-500">{photo.created_at}</p>
+                    </div>
                 </div>
 
-                <p className="font-normal text-lg">{video.description}</p>
-
-                {/* Date */}
-                <p className="text-xs text-gray-500 mb-4">{video.created_at}</p>
-
-                {/* Like */}
-                <div className="flex items-center text-gray-500">
+                {/* Like, Comment */}
+                <div className="flex items-center text-gray-500 mb-4">
                     <div className="flex items-center mr-4">
-                        <ThumbsUp className="mr-2 cursor-pointer"/>
+                        <ThumbsUp className="mr-1"/>
                         <span className="text-sm">
-                        {video.like_count}
-                            {video.like_count > 1 ? " Likes" : " Like"}
+                        {photo.like_count}
+                            {photo.like_count > 1 ? " Likes" : " Like"}
                     </span>
                     </div>
                     <div className="flex items-center mr-4">
                         <MessageCircleMore className="mr-2 cursor-pointer"/>
                         <span className="text-sm">
-                        {video.comment_count}
-                            {video.comment_count > 1 ? " comments" : " comment"}
+                        {photo.comment_count}
+                            {photo.comment_count > 1 ? " Comments" : " Comment"}
                     </span>
                     </div>
                 </div>
             </div>
             {
-                modalOpen &&
-                <VideoEditModal setModalOpen={setModalOpen} modalOpen={modalOpen} setVideos={setVideos} video={video}/>
+                modalOpen && <EditModal setPhotos={setPhotos} photo={photo} modalOpen={modalOpen} setModalOpen={setModalOpen}/>
             }
         </>
     );
 };
 
-export default VideoItem;
+export default PhotoItem;
