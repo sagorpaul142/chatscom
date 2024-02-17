@@ -16,8 +16,9 @@ import {
 import {buttonVariants} from "@/components/ui/button.jsx";
 import {cn} from "@/lib/utils.js";
 import {useAuth} from "@/Contexts/AuthContext.jsx";
-import AxiosServices from "@/Config/AxiosServices.js";
+import {baseUrl} from "@/Config/AxiosServices.js";
 import {Helmet} from "react-helmet";
+import axios from "axios";
 
 const SignUp = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +39,7 @@ const SignUp = () => {
     async function onSubmit(data) {
         try {
             setIsLoading(true)
-            let response = await AxiosServices.post('/dj-rest-auth/registration/', data)
+            let response = await axios.post(baseUrl + '/dj-rest-auth/registration/', data)
             setErrors({})
             setIsLoading(false)
             navigate("/")
@@ -63,7 +64,7 @@ const SignUp = () => {
         <div className="flex min-h-full flex-1 flex-col justify-center">
             <Helmet>
                 <title>Signup Page</title>
-                <meta name="description" content="Helmet application" />
+                <meta name="description" content="Helmet application"/>
             </Helmet>
             <div className="flex justify-end items-center my-5">
                 <Link

@@ -9,8 +9,9 @@ import {Link, useNavigate} from "react-router-dom";
 import {toast} from "sonner"
 import {useAuth} from "@/Contexts/AuthContext.jsx";
 import {setSession} from "@/lib/utils.js";
-import AxiosServices from "@/Config/AxiosServices.js";
+import {baseUrl} from "@/Config/AxiosServices.js";
 import {Helmet} from "react-helmet";
+import axios from "axios";
 
 const Login = () => {
     const [isLoading, setIsLoading] = useState(false)
@@ -28,7 +29,7 @@ const Login = () => {
     async function onSubmit(data) {
         try {
             setIsLoading(true)
-            let response = await AxiosServices.post('/dj-rest-auth/login/', data, false)
+            let response = await axios.post(baseUrl + '/dj-rest-auth/login/', data)
             if (response.status === 200) {
                 setIsAuthenticated(true);
                 setUser(response?.data?.user);

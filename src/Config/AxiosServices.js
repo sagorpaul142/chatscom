@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let baseUrl;
+export let baseUrl;
 if (process.env.NODE_ENV === 'development') {
     // baseUrl = "http://localhost:8000/api";
     baseUrl = 'http://127.0.0.1:8000';
@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === 'development') {
 } else {
     baseUrl = 'http://127.0.0.1:8000';
 }
+
 
 function getIRequestProp(isMultipart) {
     const serverUrl = baseUrl;
@@ -41,7 +42,7 @@ async function post(url, body, isMultipart) {
     });
 }
 
-async function put(url, body,isMultipart) {
+async function put(url, body, isMultipart) {
     const {serverUrl, requestHeader} = getIRequestProp(isMultipart);
     return axios.put(serverUrl + url, body, {
         headers: requestHeader

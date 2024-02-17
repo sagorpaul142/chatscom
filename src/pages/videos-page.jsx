@@ -29,6 +29,7 @@ const VideosPage = () => {
     });
 
     const onsubmit = async (data) => {
+        setIsLoading(true)
         let values = {
             title: data.title,
             description: data.description,
