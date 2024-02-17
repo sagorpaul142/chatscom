@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import VideoItem from "@/components/video/video-item.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
+import {Helmet} from "react-helmet";
 
 const VideosPage = () => {
     const [videos, setVideos] = useState([])
@@ -19,6 +20,10 @@ const VideosPage = () => {
     }, []);
     return (
         <>
+            <Helmet>
+                <title>Videos Page</title>
+                <meta name="description" content="Helmet application" />
+            </Helmet>
             <div className="max-w-3xl mx-auto">
                 {
                     videos.map(video => (

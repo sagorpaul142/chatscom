@@ -10,12 +10,12 @@ if (process.env.NODE_ENV === 'development') {
     baseUrl = 'http://127.0.0.1:8000';
 }
 
-function getIRequestProp() {
+function getIRequestProp(isMultipart) {
     const serverUrl = baseUrl;
     let userData = localStorage.getItem('access');
     let idToken;
     idToken = userData !== null ? userData : '';
-    let content_type = 'application/json';
+    let content_type = isMultipart ? 'multipart/form-data' : 'application/json';
     return {
         serverUrl: serverUrl,
         requestHeader: {
@@ -34,10 +34,10 @@ async function get(url) {
     });
 }
 
-async function post(url, body) {
-    const {serverUrl, requestHeader} = getIRequestProp();
+async function post(url, body, isMultipart) {
+    const {serverUrl, requestHeader} = getIRequestProp(isMultipart);
     return axios.post(serverUrl + url, body, {
-        // headers: requestHeader
+        headers: requestHeader
     });
 }
 

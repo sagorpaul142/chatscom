@@ -10,6 +10,7 @@ import {toast} from "sonner"
 import {useAuth} from "@/Contexts/AuthContext.jsx";
 import {setSession} from "@/lib/utils.js";
 import AxiosServices from "@/Config/AxiosServices.js";
+import {Helmet} from "react-helmet";
 
 const Login = () => {
     const [isLoading, setIsLoading] = useState(false)
@@ -61,6 +62,10 @@ const Login = () => {
 
     return (
         <div className="flex min-h-screen flex-1 flex-col justify-center relative">
+            <Helmet>
+                <title>Login Page</title>
+                <meta name="description" content="Helmet application" />
+            </Helmet>
             <div className="flex justify-end items-center my-5 absolute top-2 w-full">
                 <Link
                     to="/signup"

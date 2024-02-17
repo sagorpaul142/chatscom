@@ -1,12 +1,23 @@
-import {FilePen, MessageCircleMore, MoreVertical, ThumbsUp} from "lucide-react";
+import {FilePen, MessageCircleMore, MoreVertical, ThumbsUp, Trash2} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
+    DropdownMenuItem, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.jsx";
+import AxiosServices from "@/Config/AxiosServices.js";
+import {toast} from "sonner";
 
-const SinglePost = ({post}) => {
+const SinglePost = ({post, setPosts}) => {
+    const handleDeletePost = async (post) => {
+        try {
+            await AxiosServices.remove(`/posts/${post?.id}`)
+            setPosts(prev => prev.filter(prevPost => prevPost.id !== post?.id));
+            toast('Post deleted successfully!')
+        } catch (e) {
+            console.log(e)
+        }
+    }
     return (
         <div className="bg-white p-4 border rounded-lg shadow-md mb-3 last:mb-0 first:mt-5">
             {/* Post Header */}
@@ -40,6 +51,14 @@ const SinglePost = ({post}) => {
                             >
                                 <FilePen className="mr-2 h-4 w-4"/>
                                 Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator/>
+                            <DropdownMenuItem
+                                className="flex cursor-pointer items-center"
+                                onClick={() => handleDeletePost(post)}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4"/>
+                                Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import AxiosServices from "@/Config/AxiosServices.js";
 import {useAuth} from "@/Contexts/AuthContext.jsx";
+import {Helmet} from "react-helmet";
 
 const ProfilePage = () => {
     const [loader, setLoader] = useState(false);
@@ -20,6 +21,10 @@ const ProfilePage = () => {
 
     return (
         <>
+            <Helmet>
+                <title>Profile Page</title>
+                <meta name="description" content="Helmet application" />
+            </Helmet>
             profile
         </>
     );

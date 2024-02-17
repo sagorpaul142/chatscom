@@ -17,6 +17,7 @@ import {buttonVariants} from "@/components/ui/button.jsx";
 import {cn} from "@/lib/utils.js";
 import {useAuth} from "@/Contexts/AuthContext.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
+import {Helmet} from "react-helmet";
 
 const SignUp = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +61,10 @@ const SignUp = () => {
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center">
+            <Helmet>
+                <title>Signup Page</title>
+                <meta name="description" content="Helmet application" />
+            </Helmet>
             <div className="flex justify-end items-center my-5">
                 <Link
                     to="/"

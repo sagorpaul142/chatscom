@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import axios from "axios";
 import FriendItem from "@/components/friend/friend-item.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
+import {Helmet} from "react-helmet";
 
 const FriendsPage = () => {
     const [friends, setFriends] = useState([])
@@ -20,6 +21,10 @@ const FriendsPage = () => {
 
     return (
         <>
+            <Helmet>
+                <title>Friends Page</title>
+                <meta name="description" content="Helmet application"/>
+            </Helmet>
             <div className="mt-5">
                 {
                     friends?.length > 0 ?
