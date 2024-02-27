@@ -8,7 +8,7 @@ import {
 import AxiosServices from "@/Config/AxiosServices.js";
 import {toast} from "sonner";
 import EditModal from "@/components/photo/edit-modal.jsx";
-import {useState} from "react";
+import React, {useState} from "react";
 
 const PhotoItem = ({photo, setPhotos}) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -21,6 +21,34 @@ const PhotoItem = ({photo, setPhotos}) => {
             console.log(e)
         }
     }
+
+    async function handleLikePhoto() {
+        try {
+            let response = await AxiosServices.post(`/likephotos/`, {photo: photo?.id})
+            console.log(response.data)
+            setPhotos(photos => photos.map(photo => photo.id === response.data.photo ? {
+                ...photo,
+                like_count: photo?.like_count + 1,
+                likephoto_id: response.data.id
+            } : photo))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    async function handleUnLikePhoto() {
+        try {
+            let response = await AxiosServices.remove(`/likephotos/${photo.likephoto_id}`)
+            setPhotos(photos => photos.map(prevPhoto => prevPhoto.id === photo.id ? {
+                ...prevPhoto,
+                like_count: prevPhoto?.like_count - 1,
+                likephoto_id: null
+            } : prevPhoto))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <>
             <div className="bg-white p-4 border rounded-lg shadow-md first:mt-5 mb-4">
@@ -80,7 +108,11 @@ const PhotoItem = ({photo, setPhotos}) => {
                 {/* Like, Comment */}
                 <div className="flex items-center text-gray-500 mb-4">
                     <div className="flex items-center mr-4">
-                        <ThumbsUp className="mr-1"/>
+                        {
+                            photo.likephoto_id ?
+                                <ThumbsUp className="mr-1 cursor-pointer text-blue-600" onClick={handleUnLikePhoto}/> :
+                                <ThumbsUp className="mr-1 cursor-pointer" onClick={handleLikePhoto}/>
+                        }
                         <span className="text-sm">
                         {photo.like_count}
                             {photo.like_count > 1 ? " Likes" : " Like"}
@@ -96,7 +128,8 @@ const PhotoItem = ({photo, setPhotos}) => {
                 </div>
             </div>
             {
-                modalOpen && <EditModal setPhotos={setPhotos} photo={photo} modalOpen={modalOpen} setModalOpen={setModalOpen}/>
+                modalOpen &&
+                <EditModal setPhotos={setPhotos} photo={photo} modalOpen={modalOpen} setModalOpen={setModalOpen}/>
             }
         </>
     );

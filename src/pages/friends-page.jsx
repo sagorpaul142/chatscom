@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import axios from "axios";
 import FriendItem from "@/components/friend/friend-item.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
 import {Helmet} from "react-helmet";

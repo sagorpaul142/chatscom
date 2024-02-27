@@ -21,6 +21,34 @@ const VideoItem = ({video, setVideos}) => {
             console.log(e)
         }
     }
+
+    async function handleLikeVideo() {
+        try {
+            let response = await AxiosServices.post(`/likevideos/`, {video: video?.id})
+            console.log(response.data)
+            setVideos(videos => videos.map(video => video.id === response.data.video ? {
+                ...video,
+                like_count: video?.like_count + 1,
+                likevideo_id: response.data.id
+            } : video))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    async function handleUnLikeVideo() {
+        try {
+            let response = await AxiosServices.remove(`/likevideos/${video.likevideo_id}`)
+            setVideos(videos => videos.map(prevVideo => prevVideo.id === video.id ? {
+                ...prevVideo,
+                like_count: prevVideo?.like_count - 1,
+                likevideo_id: null
+            } : prevVideo))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <>
             <div className="bg-white p-4 border rounded-lg shadow-md first:mt-3 mb-5 last:mb-2">
@@ -70,7 +98,11 @@ const VideoItem = ({video, setVideos}) => {
                 {/* Like */}
                 <div className="flex items-center text-gray-500">
                     <div className="flex items-center mr-4">
-                        <ThumbsUp className="mr-2 cursor-pointer"/>
+                        {
+                            video.likevideo_id ?
+                                <ThumbsUp className="mr-1 cursor-pointer text-blue-600" onClick={handleUnLikeVideo}/> :
+                                <ThumbsUp className="mr-1 cursor-pointer" onClick={handleLikeVideo}/>
+                        }
                         <span className="text-sm">
                         {video.like_count}
                             {video.like_count > 1 ? " Likes" : " Like"}

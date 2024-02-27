@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu.jsx";
 import AxiosServices from "@/Config/AxiosServices.js";
 import {toast} from "sonner";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import PostEditModal from "@/components/home/post-edit-modal.jsx";
 
 const SinglePost = ({post, setPosts}) => {
@@ -21,6 +21,33 @@ const SinglePost = ({post, setPosts}) => {
             console.log(e)
         }
     }
+
+    async function handleLikePost() {
+        try {
+            let response = await AxiosServices.post(`/likes/`, {post: post?.id})
+            setPosts(posts => posts.map(post => post.id === response.data.post ? {
+                ...post,
+                like_count: post?.like_count + 1,
+                like_id: response.data.id
+            } : post))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    async function handleUnLikePost() {
+        try {
+            let response = await AxiosServices.remove(`/likes/${post.like_id}`)
+            setPosts(posts => posts.map(prevPost => prevPost.id === post.id ? {
+                ...prevPost,
+                like_count: prevPost?.like_count - 1,
+                like_id: null
+            } : prevPost))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <>
             <div className="bg-white p-4 border rounded-lg shadow-md mb-3 last:mb-0 first:mt-5">
@@ -85,7 +112,11 @@ const SinglePost = ({post, setPosts}) => {
                 {/* Like, Comment, Share */}
                 <div className="flex items-center text-gray-500">
                     <div className="flex items-center mr-4">
-                        <ThumbsUp className="mr-1 cursor-pointer"/>
+                        {
+                            post.like_id ?
+                                <ThumbsUp className="mr-1 cursor-pointer text-blue-600" onClick={handleUnLikePost}/> :
+                                <ThumbsUp className="mr-1 cursor-pointer" onClick={handleLikePost}/>
+                        }
                         <span className="text-sm">
                         {post.like_count}
                             {post.like_count > 1 ? " Likes" : " Like"}
