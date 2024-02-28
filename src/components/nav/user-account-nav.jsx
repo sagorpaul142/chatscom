@@ -26,10 +26,17 @@ const UserAccountNav = () => {
                     navigate("/")
                 }).catch((error) => {
                 console.log(error)
+                setSession(null);
+                setIsAuthenticated(false)
+                setUser(null)
                 navigate("/")
             })
         } catch (error) {
             console.log(error)
+            setSession(null);
+            setIsAuthenticated(false)
+            setUser(null)
+            navigate("/")
         }
     }
     return (
